@@ -1,0 +1,36 @@
+html{
+    font-family: "Futura", sans-serif;
+}
+
+body {
+    background-color: rgb(204, 9, 47);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.card {
+    width: 450px;
+    color: white;
+    background-color: rgb(129, 11, 11);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-header {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
