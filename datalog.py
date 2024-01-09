@@ -13,17 +13,19 @@ datalog = Blueprint('datalog', __name__)
 
 
 class DataLog:
-    def __init__(self, uploadedData, timePlayed, status):
+    def __init__(self, uploadedData, timePlayed, status, timerPoints):
         self.uploadedData = uploadedData
         self.timePlayed = timePlayed
         self.status = status
+        self.timerPoints = timerPoints
 
     def save(self):
         collection = db['datalogs']  # Nome da coleção
         data = {
             'uploadedData': self.uploadedData,
             'timePlayed': self.timePlayed,
-            'status': self.status
+            'status': self.status,
+            'timerPoints': self.timerPoints
         }
         result = collection.insert_one(data)
         return result.inserted_id
@@ -57,9 +59,10 @@ def formulario():
     uploadedData = datetime.strptime(data_hora_formatada, "%Y-%m-%dT%H:%M:%SZ")
     timePlayed = time_played_datetime
     status = request.form.get('status')
+    timerPoints = request.form.get('timerPoints')
 
     # Crie uma instância da classe DataLog e salve no banco de dados
-    log = DataLog(uploadedData, timePlayed, status)
+    log = DataLog(uploadedData, timePlayed, status, timerPoints)
     log.save()
 
     return '', 200
@@ -137,6 +140,12 @@ def generate_csv(documentos):
 
 @datalog.route('/datalogs/downloaddata', methods=['GET'])
 def download_csv_zip():
+    current_time = datetime.now()
+    format_string = "%d%m%y_%H%M%S"
+    formatted_time = current_time.strftime(format_string)
+    filename_csv = "logs"
+
+
     # Obter todos os documentos da coleção
     documents = get_all_documents()
 
@@ -146,12 +155,12 @@ def download_csv_zip():
     # Criar um arquivo ZIP
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        zipf.writestr('dados.csv', csv_data.getvalue())
+        zipf.writestr(f"{filename_csv}_{formatted_time}.csv", csv_data.getvalue())
 
     # Configurar a resposta HTTP
     response = Response(zip_buffer.getvalue())
     response.headers['Content-Type'] = 'application/zip'
-    response.headers['Content-Disposition'] = 'attachment; filename=dados.zip'
+    response.headers['Content-Disposition'] = f"attachment; filename={filename_csv}_{formatted_time}.zip"
 
     return response
 
